@@ -1,0 +1,610 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title> Ханойски Кули </title>
+    <link rel="stylesheet" href="radi.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <script src="suica.min.js"></script>
+    <script>
+        let column1 = [];
+        let column2 = [];
+        let column3 = [];
+        var lastUsed;
+        var temp =0;//prevents shifting twice or more times
+        var flag =0;//checks only once
+        var isOnly=0;
+        var clicks=0;
+        var zname =0;
+
+
+
+
+function main()
+{
+            p = new Suica();
+            base = cuboid([0,0,-10],[25,75,5]).custom({color:[1,0,0]});
+            lookAt( [85,0,0], [0,0,0], [0,0,1] );
+
+            cylinder1  = cylinder([0,-27,-10],1,20).custom({interactive:true,color:[1,0,0]});//6
+            cylinder2  = cylinder([0,0,-10],1,20).custom({interactive:true,color:[1,0,0]});//9
+            cylinder3  = cylinder([0,27,-10],1,20).custom({interactive:true,color:[1,0,0]});//12
+
+            disc1 = cylinder([0,-207,0.7],2,1.2).custom({color:[1,1,0],interactive:true});
+            disc2 = cylinder([0,-207,-0.7],4,1.2).custom({color:[1,0,1],interactive:true});
+            disc3 = cylinder([0,-207,-2.1],6,1.2).custom({color:[0,1,1],interactive:true});
+            disc4 = cylinder([0,-207,-3.5],8,1.2).custom({color:[0,0,1],interactive:true});
+            disc5 = cylinder([0,-207,-4.9],10,1.2).custom({color:[1,0,0],interactive:true});
+            disc6 = cylinder([0,-207,-6.1],12,1.2).custom({color:[0,1,0],interactive:true});
+            disc7 = cylinder([0,-207,-7.5],14,1.2).custom({color:[0.25,0.25,0.25],interactive:true});
+
+
+        }
+
+//clicks counter
+function clickcounter()
+{
+            clicks++;
+            document.getElementById("counter").innerHTML=clicks;
+        }
+
+function checkIfOnlyOne1()
+{
+    document.getElementById("btn2").disabled = true;
+    document.getElementById("btn3").disabled = true;
+}
+function checkIfOnlyOne2()
+{
+            document.getElementById("btn1").disabled = true;
+            document.getElementById("btn3").disabled = true;
+        }
+function checkIfOnlyOne3()
+{
+            document.getElementById("btn2").disabled = true;
+            document.getElementById("btn1").disabled = true;
+        }
+function activatebtns()
+{
+    document.getElementById("btn1").disabled = false;
+    document.getElementById("btn2").disabled = false;
+    document.getElementById("btn3").disabled = false;
+}
+
+function finish()
+{
+    if((column1.length==0 && column2.length==0) || (column1.length==0 && column3.length==0))alert("You won!");
+}
+
+
+
+//difficulty
+function easy()
+{
+            zname=1;
+            p.nextFrame=undefined;
+            column1 = [];
+            column2 = [];
+            column3 = [];
+
+            column1.push(disc3,disc2,disc1);
+
+
+            disc1.center = [0,-27,-4.9];
+            disc2.center = [0,-27,-6.1];
+            disc3.center = [0,-27,-7.5];
+            disc4.center = [0,-207,-6.1];
+            disc5.center = [0,-207,-7.5];
+            disc6.center = [0,-207,-6.1];
+            disc7.center = [0,-207,-7.5];
+
+        }
+function medium()
+{
+            zname=1;
+            p.nextFrame=undefined;
+            column1 = [];
+            column2 = [];
+            column3 = [];
+            column1.push(disc5,disc4,disc3,disc2,disc1);
+            disc1.center = [0,-27,-2.1];
+            disc2.center = [0,-27,-3.5];
+            disc3.center = [0,-27,-4.9];
+            disc4.center = [0,-27,-6.1];
+           disc5.center = [0,-27,-7.5];
+            disc6.center = [0,-207,-6.1];
+            disc7.center = [0,-207,-7.5];
+
+
+        }
+function hard ()
+{
+            zname=1;
+            p.nextFrame=undefined;
+            column1 = [];
+            column2 = [];
+            column3 = [];
+            column1.push(disc7,disc6,disc5,disc4,disc3,disc2,disc1);
+            disc1.center = [0,-27,0.7];
+            disc2.center = [0,-27,-0.7];
+            disc3.center = [0,-27,-2.1];
+            disc4.center = [0,-27,-3.5];
+            disc5.center = [0,-27,-4.9];
+            disc6.center = [0,-27,-6.1];
+            disc7.center = [0,-27,-7.5];
+        }
+
+
+//going up functions
+function remove1()
+{
+    var last = column1[column1.length - 1];
+    if (last.center[2] < 18) {
+        last.center[2] += 30 * Suica.dTime;
+        p.nextFrame = remove1;
+    }
+    lastUsed = 1;
+}
+
+function remove2()
+{
+        var last = column2[column2.length - 1];
+        if (last.center[2] < 18) {
+            last.center[2] += 30 * Suica.dTime;
+            p.nextFrame = remove2;
+        }
+        lastUsed = 2;
+}
+
+function remove3()
+{
+        var last = column3[column3.length - 1];
+        if (last.center[2] < 18) {
+            last.center[2] += 30 * Suica.dTime;
+            p.nextFrame = remove3;
+        }
+        lastUsed = 3;
+}
+
+function isGameStarted()
+{
+    if (zname==0)
+    {
+        document.getElementById("finish").disabled = true;
+        zname=0;
+
+    }
+    else {
+        document.getElementById("finish").disabled = false;
+        zname=0;
+    }
+
+
+}
+
+
+//moving to functions
+function place2()
+{
+
+    if (lastUsed==1)
+    {
+        if (column2.length>1 && flag==1)
+        {
+            if (column2[column2.length-1].radius>column2[column2.length-2].radius)//big to small
+            {
+                column1.push(column2[column2.length-1]);
+                column2.pop();
+                flag=1;
+                column1[column1.length-1].center[2] -= 24.5;
+            }else flag=1;
+        }
+
+        if (temp ==0)
+        {
+
+            column2.push(column1[column1.length-1]);
+            column1.pop();
+            flag=1;
+            temp++;
+        }
+
+
+        if (column2[column2.length-1].center[1]<0 ) //mestene na dqsno
+        {
+            column2[column2.length-1].center[1] += 30 * Suica.dTime;
+            p.nextFrame=place2;
+        }
+
+        if (column2[column2.length-1].center[1]>0 )
+        {
+            p.nextFrame=down2;
+        }
+    }
+
+    else if (lastUsed==3)
+    {
+            if (column2.length>1 && flag==1)
+            {
+                if (column2[column2.length-2].radius<column2[column2.length-1].radius)//big to small
+                {
+                    column3.push(column2[column2.length-1]);
+                    column2.pop();
+                    flag=1;
+                    column3[column3.length-1].center[2] -= 24.5;
+
+                }
+                else flag=1;
+            }
+
+            if (temp ==0)
+            {
+
+                column2.push(column3[column3.length-1]);
+                column3.pop();
+                temp++;
+            }
+
+
+            if (column2[column2.length-1].center[1]>0) //mestene <-
+            {
+                column2[column2.length-1].center[1] -= 30 * Suica.dTime;
+                p.nextFrame=place2;
+            }
+
+            if (column2[column2.length-1].center[1]<0)
+            {
+                p.nextFrame=down2;
+            }
+
+
+    }
+
+    else if(lastUsed==2)
+    {
+        p.nextFrame=down2;
+    }
+}
+function place3()
+{
+
+            if (lastUsed==1)
+            {
+                if (column3.length>1 && flag==0)
+                {
+                    if (column1[column1.length-1].radius>column3[column3.length-1].radius)
+                    {
+                        column1.push(column3[column3.length-1]);
+                        column3.pop();
+                        flag=1;
+                        column1[column1.length-1].center[2] -= 24.5;
+                    }
+                    else flag=1;
+                }
+
+                if (temp ==0)
+                {
+
+
+                    column3.push(column1[column1.length-1]);
+                    column1.pop();
+                    flag=1;
+                    temp++;
+                }
+
+
+                if (column3[column3.length-1].center[1]<27) //mestene na dqsno
+                {
+                    column3[column3.length-1].center[1] += 30 * Suica.dTime;
+                    p.nextFrame=place3;
+                }
+
+                if (column3[column3.length-1].center[1]>27)
+                {
+
+                    p.nextFrame=down3;
+                }
+            }
+
+            else if (lastUsed==2)
+            {
+
+                if (column3.length>1  && flag==0)
+                {
+                    if (column2[0].radius>column3[column3.length-1].radius)
+                    {
+                        column2.push(column3[column3.length-1]);
+                        column3.pop();
+                        flag=1;
+                        column2[column2.length-1].center[2] -= 24.5;
+                    }
+                    else flag=1;
+
+                }
+
+
+                if (temp ==0)
+                {
+                    column3.push(column2[column2.length-1]);
+                    column2.pop();
+                    flag=1;
+                    temp++;
+                }
+
+
+                if (column3[column3.length-1].center[1]<27) //mestene vstrani
+                {
+                    column3[column3.length-1].center[1] += 30 * Suica.dTime;
+                    p.nextFrame=place3;
+                }
+
+                if (column3[column3.length-1].center[1]>27)
+                {
+
+                    p.nextFrame=down3;
+                }
+            }
+
+            else if(lastUsed==3)
+            {
+                p.nextFrame=down3;
+            }
+        }
+function place1()
+{
+
+            if (lastUsed==3 )
+            {
+                if (column1.length>1 && flag==1)
+                {
+                    if (column1[column1.length-2].radius<column1[column1.length-1].radius)//big to small
+                    {
+                        column3.push(column1[column1.length-1]);
+                        column1.pop();
+                        flag=1;
+                        column3[column3.length-1].center[2] -= 24.5;
+                    }
+                    else flag=1;
+                }
+
+
+
+                if (temp ==0)
+                {
+
+                    column1.push(column3[column3.length-1]);
+                    column3.pop();
+                    temp++;
+                }
+
+
+                if (column1[column1.length-1].center[1]>-27) //mestene <-
+                {
+                    column1[column1.length-1].center[1] -= 30 * Suica.dTime;
+                    p.nextFrame=place1;
+                }
+
+                if (column1[column1.length-1].center[1]<-27)
+                {
+                    p.nextFrame=down1;
+                }
+
+            }
+
+            else if (lastUsed==2)
+            {
+                if (column1.length>=1  && flag==0)
+                {
+                    if (column2[column2.length-1].radius>column1[column1.length-1].radius)
+                    {
+                        column2.push(column1[column1.length-1]);
+                        column1.pop();
+                        flag=1;
+                        column2[column2.length-1].center[2] -= 24.5;
+
+                    }else flag=1;
+
+                }
+
+
+                if (temp ==0)
+                {
+                    column1.push(column2[column2.length-1]);
+                    column2.pop();
+                    flag=1;
+                    temp++;
+                }
+
+
+                if (column1[column1.length-1].center[1]>-27) //mestene vstrani
+                {
+                    column1[column1.length-1].center[1] -= 30 * Suica.dTime;
+                    p.nextFrame=place1;
+                }
+
+                if (column1[column1.length-1].center[1]<-27)
+                {
+                    p.nextFrame=down1;
+                }
+            }
+
+            else if(lastUsed==1){
+                p.nextFrame=down1;
+
+            }
+        }
+
+
+//moving down functions
+function down3 ()
+{
+            column3[column3.length-1].center[2] -= 28.5 * Suica.dTime;
+
+            if (column3[column3.length-1].center[2]<-7.5  )
+            {
+                isOnly=0;
+                flag=0;
+                temp=0;
+                p.nextFrame= undefined;
+
+            }
+
+            else if(column3.length !=1 && column3.length>1)
+            {
+
+                if (column3[column3.length - 1].center[2] < 1+column3[column3.length - 2].center[2])//small < big
+                {
+                    flag = 0;
+                    temp = 0;
+                    isOnly=0;
+
+                    p.nextFrame = undefined;
+                }
+            }
+            else p.nextFrame = down3;
+        }
+
+function down2 ()
+{
+    column2[column2.length-1].center[2] -= 28.5 * Suica.dTime;
+
+    if (column2[column2.length-1].center[2]<-7.5  )
+    {
+        isOnly=0;
+        flag=0;
+        temp=0;
+        p.nextFrame= undefined;
+
+    }
+
+    else if(column2.length !=1 && column2.length>1)
+    {
+
+        if (column2[column2.length - 1].center[2] < 1+column2[column2.length - 2].center[2])//small < big
+        {
+            flag = 0;
+            temp = 0;
+            isOnly=0;
+            p.nextFrame = undefined;
+        }
+    }
+    else p.nextFrame = down2;
+}
+
+function down1 ()
+{
+
+            column1[column1.length-1].center[2] -= 28.5 * Suica.dTime;
+
+            if (column1[column1.length-1].center[2]<-7.5  )
+            {
+                isOnly=0;
+                flag=0;
+                temp=0;
+                p.nextFrame= undefined;
+
+            }
+
+            else if(column1.length !=1 && column1.length>1)
+            {
+
+                if (column1[column1.length - 1].center[2] < 1+column1[column1.length - 2].center[2])//small < big
+                {
+                    isOnly=0;
+                    flag = 0;
+                    temp = 0;
+                    p.nextFrame = undefined;
+                }
+            }
+            else p.nextFrame = down1;
+        }
+
+ function execute()
+ {
+
+
+     console.log('col1 [0]: %O \n', column1[0]);
+     console.log('col1 [1]: %O \n', column1[1]);
+     console.log('col1 [2]: %O \n', column1[2]);
+     console.log('col2 [0]: %O \n', column2[0]);
+     console.log('col2 [1]: %O \n', column2[1]);
+     console.log('col2 [2]: %O \n', column2[2]);
+     console.log('col3 [0]: %O \n', column3[0]);
+     console.log('col3 [1]: %O \n', column3[1]);
+     console.log('col3 [2]: %O \n', column3[2]);
+     console.log('------------------------- \n');
+
+
+
+ }
+
+
+
+</script>
+
+</head>
+<body onload="main()">
+<div class = "header">
+    <h1 > Ханойски Кули</h1>
+    <p > Радостин Иванов | 2021 | №45652</p>
+</div>
+
+<div class="part1">
+    <p>От името на град Ханой идва и името на математическата игра на Ханойските кули. Тази игра е измислена от френският математик Едуард Лука през на 1883г.
+    Тя представлява 3,5 или 7 диска поставени един върху друг, подредени по размер, с най-големият най-отдолу. Играта започва, когати всички дискове са върху първият стълб и приключва, когато са в правилен ред върху
+    вторяият или третият, но в правилен ред. Може да се мести само по един диск на ход, но не е разрешено поставянето на по-голям върху по-малък диск. Един ход се брои за приключен, когато един диск е вдигнат и поставен отново върху друг или същият, от който е взет стълб.</p>
+</div>
+<br>
+<div class="part1">
+    <p> В днешно време играта има различни приложения. Много психолози в изследваниятя си върху хората и техните способности за решаване на проблеми.
+    От друга страна невропсихолозите я използват в розлични методи за диагностициране на амнезия. В много случаи, когат се правят резервни копия на данни върху
+    магнитни ленти Ханойските кули се използват в схемата за смяна на ролките. Днес играта има много различни проиложения.В университетите,
+        както и във ФМИ, Ханойските кули се използват за демонстриране на рекурсивността пред студентите по Приложна Математика и Информатика. </p>
+    <img src="radi.gif">
+    <br>
+
+</div>
+
+<div  style="text-align: center">
+    <button class="btn" onclick="easy()" >Лесно </button>
+    <button class="btn" onclick="medium()">Средно </button>
+    <button class="btn" onclick="hard()">Трудно </button>
+
+
+
+
+
+</div>
+
+    <div id="easyGame">
+        <p>Брой на движениятa:  <span id="counter"></span></p>
+        <canvas style="border-radius: 6%;"
+                width="740" height="350">
+        </canvas>
+
+    </div>
+
+
+<div class="part2" style="alignment: right">
+
+
+    <button  class="btn" id="btn1" style="margin-left: 12%;" onclick="remove1();clickcounter();checkIfOnlyOne1()">Вдигни </button>
+    <button  class="btn" id="btn2"  style="margin-left: 5%;" onclick="remove2();clickcounter();checkIfOnlyOne2()">Вдигни </button>
+    <button class="btn" id="btn3"   style="margin-left: 5%;"onclick="remove3();clickcounter();checkIfOnlyOne3()">Вдигни </button>
+
+    <button  class="btn" style="margin-left: 12%;"onclick="place1();activatebtns()" >Постави</button>
+    <button  class="btn" style="margin-left: 5%;"onclick="place2();activatebtns()">Постави </button>
+
+    <button  class="btn" style="margin-left: 5%;"onclick="place3();activatebtns()">Постави </button>
+
+
+</div>
+
+
+<button  class="btn"  id="finish" onclick="finish() ">Край </button>
+
+<br><br><br><br><br>
+
+<button  onclick="execute()">execute </button>
+</body>
+
+</html>
